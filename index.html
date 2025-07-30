@@ -38,7 +38,6 @@
         .sidebar {
             background-color: #eff6ff; /* blue-50 - 아주 연한 푸른색 */
             color: black; /* 텍스트 색상을 어둡게 변경 */
-            /* 기존 padding: 1.5rem; (p-6) 제거 - 하위 요소에서 개별적으로 패딩 적용 */
             width: 16rem; /* w-64 */
             flex-shrink: 0; /* 사이드바 너비 유지 */
             box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* 그림자 효과 */
@@ -68,10 +67,6 @@
                 height: auto; /* flexbox가 높이 관리하도록 함 (부모 높이만큼 확장) */
                 transform: translateX(0); /* 데스크톱에서는 항상 보이도록 */
                 box-shadow: none; /* 데스크톱에서는 그림자 제거 */
-            }
-            /* 데스크톱에서 메인 콘텐츠가 사이드바 옆에 오도록 왼쪽 마진 제거 */
-            .main-content-area {
-                /* margin-left: 16rem; 이 부분을 제거했습니다. */
             }
         }
 
@@ -133,15 +128,7 @@
 
         /* 복사 셀 클릭 피드백 스타일 */
         .copy-cell {
-            /* cursor: pointer; 제거 */
-            /* transition: all 0.1s ease-in-out; 제거 */
             text-align: center; /* 이미지 중앙 정렬을 위해 유지 */
-        }
-        .copy-cell:hover {
-            /* 배경색 변경 제거 */
-        }
-        .copy-cell:active {
-            /* transform: translateY(1px); 제거 */
         }
 
         /* 이미지 자체에 대한 호버/액티브 효과 */
@@ -158,155 +145,386 @@
     </style>
 </head>
 <body>
-    <!-- 전체 콘텐츠 래퍼: 최대 너비 제한 및 중앙 정렬 -->
-    <div class="max-w-screen-lg mx-auto flex flex-col min-h-screen">
-        <!-- Header Section -->
-        <header class="bg-white shadow-sm py-4 px-6 md:px-12 rounded-b-lg border-b border-gray-200 w-full">
-            <nav class="flex justify-between items-center">
-                <!-- 린시의 노래책 텍스트 제거 -->
-                <a href="#" class="text-2xl font-bold text-gray-800"></a>
-                <!-- 검색 바 및 카테고리 선택 (일체형) -->
-                <div class="hidden md:flex items-center border border-gray-200 rounded-full overflow-hidden focus-within:ring-2 focus-within:ring-blue-200 transition duration-200">
-                    <div class="relative flex-1 py-2 pl-4">
-                        <select id="category-select" class="w-full h-full bg-transparent focus:outline-none text-gray-700 appearance-none pr-8">
-                            <option value="all">전체</option>
-                            <option value="여자 아이돌">여자 아이돌</option>
-                            <option value="남자 아이돌">남자 아이돌</option>
-                            <option value="인디/힙합">인디/힙합</option>
-                            <option value="팝송">팝송</option>
-                            <option value="제이팝">제이팝</option>
-                            <option value="업보 목록">업보 목록</option>
-                        </select>
-                        <!-- 세모 화살표 아이콘 -->
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 6.757 7.586 5.343 9z"/></svg>
-                        </div>
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm py-4 px-6 md:px-12 rounded-b-lg border-b border-gray-200">
+        <nav class="container mx-auto flex justify-between items-center">
+            <!-- 린시의 노래책 텍스트 제거 -->
+            <a href="#" class="text-2xl font-bold text-gray-800"></a>
+            <!-- 검색 바 및 카테고리 선택 (일체형) -->
+            <div class="hidden md:flex items-center border border-gray-200 rounded-full overflow-hidden focus-within:ring-2 focus-within:ring-blue-200 transition duration-200">
+                <div class="relative flex-1 py-2 pl-4">
+                    <select id="category-select" class="w-full h-full bg-transparent focus:outline-none text-gray-700 appearance-none pr-8">
+                        <option value="all">전체</option>
+                        <option value="여자 아이돌">여자 아이돌</option>
+                        <option value="남자 아이돌">남자 아이돌</option>
+                        <option value="인디/힙합">인디/힙합</option>
+                        <option value="팝송">팝송</option>
+                        <option value="제이팝">제이팝</option>
+                        <option value="업보 목록">업보 목록</option>
+                    </select>
+                    <!-- 세모 화살표 아이콘 -->
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 6.757 7.586 5.343 9z"/></svg>
                     </div>
-                    <div class="h-6 border-l border-gray-200 mx-1"></div>
-                    <input type="search" id="search-input" placeholder="검색..." class="flex-1 p-2 pl-4 bg-transparent focus:outline-none w-64">
-                    <button class="text-gray-600 p-2 px-4 h-full flex items-center justify-center hover:text-gray-700 transition duration-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </button>
                 </div>
-                <!-- 모바일 사이드바 토글 버튼 -->
-                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-gray-700 focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                <div class="h-6 border-l border-gray-200 mx-1"></div>
+                <input type="search" id="search-input" placeholder="검색..." class="flex-1 p-2 pl-4 bg-transparent focus:outline-none w-64">
+                <button class="text-gray-600 p-2 px-4 h-full flex items-center justify-center hover:text-gray-700 transition duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </button>
+            </div>
+            <!-- 모바일 사이드바 토글 버튼 -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-gray-700 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+    </header>
+
+    <!-- 메인 레이아웃 래퍼 (사이드바 + 메인 콘텐츠) -->
+    <div class="main-layout-wrapper">
+        <!-- 사이드바 -->
+        <aside id="sidebar" class="sidebar">
+            <div class="logo-container px-6 py-8">
+                <a href="#" id="sidebar-logo-link">
+                    <img src="https://media.discordapp.net/attachments/947143234885419081/1400157310562734142/copy.png?ex=688b9d9c&is=688a4c1c&hm=96561cc9b17c368e8281c7cabd10f861c960d17ede1d5d9c2e57fde7ce55918a&=&format=webp&quality=lossless" alt="린시의 노래책 로고" class="w-full h-auto block">
+                </a>
+            </div>
+            <nav class="flex-1 overflow-y-auto">
+                <ul class="space-y-0">
+                    <li class="border-b border-blue-100 last:border-b-0">
+                        <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="all">전체</a>
+                    </li>
+                    <li class="border-b border-blue-100 last:border-b-0">
+                        <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="여자 아이돌">여자 아이돌</a>
+                    </li>
+                    <li class="border-b border-blue-100 last:border-b-0">
+                        <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="남자 아이돌">남자 아이돌</a>
+                    </li>
+                    <li class="border-b border-blue-100 last:border-b-0">
+                        <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="인디/힙합">인디/힙합</a>
+                    </li>
+                    <li class="border-b border-blue-100 last:border-b-0">
+                        <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="팝송">팝송</a>
+                    </li>
+                    <li> <!-- '제이팝' li에서 border-b 제거 -->
+                        <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="제이팝">제이팝</a>
+                    </li>
+                    <li data-category="업보 목록"> <!-- 커스텀 CSS로 간격 조정 -->
+                        <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="업보 목록">업보 목록</a>
+                    </li>
+                </ul>
             </nav>
-        </header>
+        </aside>
 
-        <!-- 메인 레이아웃 래퍼 (사이드바 + 메인 콘텐츠) -->
-        <div class="main-layout-wrapper flex-1 flex">
-            <!-- 사이드바 -->
-            <aside id="sidebar" class="sidebar">
-                <div class="logo-container px-6 py-8">
-                    <a href="#" id="sidebar-logo-link">
-                        <img src="https://media.discordapp.net/attachments/947143234885419081/1400157310562734142/copy.png?ex=688b9d9c&is=688a4c1c&hm=96561cc9b17c368e8281c7cabd10f861c960d17ede1d5d9c2e57fde7ce55918a&=&format=webp&quality=lossless" alt="린시의 노래책 로고" class="w-full h-auto block">
-                    </a>
+        <!-- 모바일 사이드바 오버레이 -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main class="main-content-area flex-1 flex flex-col">
+            <!-- 복사 성공 메시지 -->
+            <div id="copy-message" class="copy-message">복사되었습니다!</div>
+
+            <!-- Table Section -->
+            <section id="table-section" class="flex-1 flex flex-col p-4 bg-white">
+                <div class="flex-1 bg-white overflow-x-auto">
+                    <table class="min-w-full divide-y-0 divide-gray-200 table-fixed w-full"> <!-- divide-y-0로 변경 -->
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">아티스트</th>
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">제목</th>
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">장르</th>
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">비고</th>
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"></th> <!-- '복사' 열 헤더 이름 제거 -->
+                            </tr>
+                        </thead>
+                        <tbody id="music-table-body" class="bg-white divide-y-0 divide-gray-200"> <!-- divide-y-0로 변경 -->
+                            <!-- Data will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
-                <nav class="flex-1 overflow-y-auto">
-                    <ul class="space-y-0">
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="all">전체</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="여자 아이돌">여자 아이돌</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="남자 아이돌">남자 아이돌</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="인디/힙합">인디/힙합</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="팝송">팝송</a>
-                        </li>
-                        <li> <!-- '제이팝' li에서 border-b 제거 -->
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="제이팝">제이팝</a>
-                        </li>
-                        <li data-category="업보 목록"> <!-- 커스텀 CSS로 간격 조정 -->
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="업보 목록">업보 목록</a>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
+            </section>
 
-            <!-- 모바일 사이드바 오버레이 -->
-            <div id="sidebar-overlay" class="sidebar-overlay"></div>
+            <!-- Notice Section -->
+            <section id="notice-section" class="flex-1 flex flex-col p-4 bg-white hidden">
+                <div class="w-full px-8 py-8 text-center">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">공지사항</h2>
+                    <p class="text-gray-600 text-lg leading-relaxed">
+                        1. 신청곡은 노래책에 있는 노래만!<br>
+                        2. 목 상태에 따라 순서를 미루거나 거절할 수 있습니다
+                    </p>
 
-            <!-- 메인 콘텐츠 영역 -->
-            <main class="main-content-area flex-1 flex flex-col p-4 bg-white">
-                <!-- 복사 성공 메시지 -->
-                <div id="copy-message" class="copy-message">복사되었습니다!</div>
-
-                <!-- Table Section -->
-                <section id="table-section" class="flex-1 flex flex-col p-4 bg-white">
-                    <div class="flex-1 bg-white overflow-x-auto">
-                        <table class="min-w-full divide-y-0 divide-gray-200 table-fixed w-full"> <!-- divide-y-0로 변경 -->
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">아티스트</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">제목</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">장르</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">비고</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"></th> <!-- '복사' 열 헤더 이름 제거 -->
-                                </tr>
-                            </thead>
-                            <tbody id="music-table-body" class="bg-white divide-y-0 divide-gray-200"> <!-- divide-y-0로 변경 -->
-                                <!-- Data will be inserted here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Notice Section -->
-                <section id="notice-section" class="flex-1 flex flex-col p-4 bg-white hidden">
-                    <div class="w-full px-8 py-8 text-center">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4">공지사항</h2>
-                        <p class="text-gray-600 text-lg leading-relaxed">
-                            1. 신청곡은 노래책에 있는 노래만!<br>
-                            2. 목 상태에 따라 순서를 미루거나 거절할 수 있습니다
-                        </p>
-
-                        <!-- 새로 추가된 박스 컨테이너 -->
-                        <div class="flex flex-col md:flex-row gap-8 mt-8 justify-center">
-                            <!-- 첫 번째 박스 -->
-                            <div class="bg-blue-50 p-6 rounded-lg shadow-md w-4/5 md:w-2/5 flex flex-col">
-                                <h3 class="text-2xl font-semibold text-blue-800 mb-2">신청곡 가격표</h3>
-                                <div class="flex flex-col flex-1 justify-center">
-                                    <p class="text-gray-700 text-lg">
-                                        모든 곡 <span class="text-yellow-500 font-bold text-xl">5,000 치즈</span><br>
-                                        <span class="text-gray-400">(단 어려운 ★ 노래는 언제 끌지 모름)</span>
-                                    </p>
-                                </div>
+                    <!-- 새로 추가된 박스 컨테이너 -->
+                    <div class="flex flex-col md:flex-row gap-8 mt-8 justify-center">
+                        <!-- 첫 번째 박스 -->
+                        <div class="bg-blue-50 p-6 rounded-lg shadow-md w-4/5 md:w-2/5 flex flex-col">
+                            <h3 class="text-2xl font-semibold text-blue-800 mb-2">신청곡 가격표</h3>
+                            <div class="flex flex-col flex-1 justify-center">
+                                <p class="text-gray-700 text-lg">
+                                    모든 곡 <span class="text-yellow-500 font-bold text-xl">5,000 치즈</span><br>
+                                    <span class="text-gray-400">(단 어려운 ★ 노래는 언제 끌지 모름)</span>
+                                </p>
                             </div>
-                            <!-- 두 번째 박스 -->
-                            <div class="bg-blue-50 p-6 rounded-lg shadow-md w-4/5 md:w-2/5 flex flex-col">
-                                <h3 class="text-2xl font-semibold text-blue-800 mb-2">업보 가격표</h3>
-                                <div class="flex flex-col flex-1 justify-center">
-                                    <!-- 각 항목을 별도의 <p> 태그로 분리하여 간격 조절 -->
-                                    <p class="text-gray-700 text-lg mb-1">노래 연습: <span class="text-yellow-500 font-bold">50,000 치즈</span></p>
-                                    <p class="text-gray-700 text-lg mb-0.5">녹음: <span class="text-yellow-500 font-bold">200,000 치즈</span></p>
-                                    <p class="text-sm text-gray-400 -mt-1 mb-1">외국곡 : + <span class="text-yellow-500 font-bold">50,000 치즈</span></p>
-                                    <p class="text-gray-700 text-lg mb-0">애교곡: <span class="text-yellow-500 font-bold">1,000,000 치즈</span></p>
-                                </div>
+                        </div>
+                        <!-- 두 번째 박스 -->
+                        <div class="bg-blue-50 p-6 rounded-lg shadow-md w-4/5 md:w-2/5 flex flex-col">
+                            <h3 class="text-2xl font-semibold text-blue-800 mb-2">업보 가격표</h3>
+                            <div class="flex flex-col flex-1 justify-center">
+                                <!-- 각 항목을 별도의 <p> 태그로 분리하여 간격 조절 -->
+                                <p class="text-gray-700 text-lg mb-1">노래 연습: <span class="text-yellow-500 font-bold">50,000 치즈</span></p>
+                                <p class="text-gray-700 text-lg mb-0.5">녹음: <span class="text-yellow-500 font-bold">200,000 치즈</span></p>
+                                <p class="text-sm text-gray-400 -mt-1 mb-1">외국곡 : + <span class="text-yellow-500 font-bold">50,000 치즈</span></p>
+                                <p class="text-gray-700 text-lg mb-0">애교곡: <span class="text-yellow-500 font-bold">1,000,000 치즈</span></p>
                             </div>
                         </div>
                     </div>
-                </section>
-            </main>
-        </div>
-
-        <!-- Footer Section -->
-        <footer class="bg-gray-800 text-white py-8 px-6 md:px-12 rounded-t-lg mt-4 w-full">
-            <div class="text-center text-sm">
-                <p>&copy; 2025 린시의 노래책. 모든 권리 보유.</p>
-                <div class="mt-4 space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white">개인정보처리방침</a>
-                    <a href="#" class="text-gray-400 hover:text-white">이용약관</a>
                 </div>
-            </div>
-        </footer>
+            </section>
+        </main>
     </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white py-8 px-6 md:px-12 rounded-t-lg mt-4">
+        <div class="container mx-auto text-center text-sm">
+            <p>&copy; 2025 린시의 노래책. 모든 권리 보유.</p>
+            <div class="mt-4 space-x-4">
+                <a href="#" class="text-gray-400 hover:text-white">개인정보처리방침</a>
+                <a href="#" class="text-gray-400 hover:text-white">이용약관</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const sidebarLinks = document.querySelectorAll('#sidebar nav ul li a');
+            const musicTableBody = document.getElementById('music-table-body');
+            const categorySelect = document.getElementById('category-select');
+            const sidebarLogoLink = document.getElementById('sidebar-logo-link'); // 로고 링크 요소 가져오기
+            const tableSection = document.getElementById('table-section'); // 테이블 섹션 요소 가져오기
+            const noticeSection = document.getElementById('notice-section'); // 공지사항 섹션 요소 가져오기
+            const searchInput = document.querySelector('header input[type="search"]'); // 검색 입력 필드
+            const copyMessage = document.getElementById('copy-message'); // 복사 메시지 요소
+
+            // Sample Music Data
+            const allMusicData = [
+                { artist: 'NewJeans', title: 'Ditto', genre: '여자 아이돌', note: '완곡' },
+                { artist: 'BTS', title: 'Dynamite', genre: '남자 아이돌', note: '★' },
+                { artist: '혁오 (Hyukoh)', title: '위잉위잉', genre: '인디/힙합', note: '완곡' },
+                { artist: 'Adele', title: 'Rolling in the Deep', genre: '팝송', note: '★' },
+                { artist: '요아소비 (YOASOBI)', title: '아이돌 (アイドル)', genre: '제이팝', note: '완곡' },
+                { artist: 'IVE', title: 'LOVE DIVE', genre: '여자 아이돌', note: '★' },
+                { artist: 'Stray Kids', title: 'God\'s Menu', genre: '남자 아이돌', note: '완곡' },
+                { artist: '잔나비 (Jannabi)', title: '주저하는 연인들을 위해', genre: '인디/힙합', note: '★' },
+                { artist: 'Dua Lipa', title: 'Levitating', genre: '팝송', note: '완곡' },
+                { artist: 'Official髭男dism', title: 'Pretender', genre: '제이팝', note: '★' },
+                { artist: 'LE SSERAFIM', title: 'UNFORGIVEN', genre: '여자 아이돌', note: '완곡' },
+                { artist: 'SEVENTEEN', title: 'Super', genre: '남자 아이돌', note: '★' },
+                { artist: 'AKMU', title: '낙엽이 아름다운 이유', genre: '인디/힙합', note: '완곡' },
+                { artist: 'The Weeknd', title: 'Blinding Lights', genre: '팝송', note: '★' },
+                { artist: 'King Gnu', title: '白日', genre: '제이팝', note: '완곡' },
+                // 업보 목록에 대한 데이터는 현재 없으므로, 클릭 시 "데이터가 없습니다."가 표시됩니다.
+            ];
+
+            // 사이드바 열기 함수
+            function openSidebar() {
+                sidebar.classList.add('open');
+                sidebarOverlay.style.display = 'block';
+            }
+
+            // 사이드바 닫기 함수
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                sidebarOverlay.style.display = 'none';
+            }
+
+            // 섹션 가시성 제어 함수
+            function showSection(sectionToShow) {
+                if (sectionToShow === 'table') {
+                    tableSection.classList.remove('hidden');
+                    noticeSection.classList.add('hidden');
+                } else if (sectionToShow === 'notice') {
+                    tableSection.classList.add('hidden');
+                    noticeSection.classList.remove('hidden');
+                }
+            }
+
+            // 복사 메시지 표시 함수
+            function showCopyMessage() {
+                copyMessage.classList.add('show');
+                setTimeout(() => {
+                    copyMessage.classList.remove('show');
+                }, 2000); // 2초 후 메시지 숨김
+            }
+
+            // 테이블 데이터 렌더링 함수 (공지사항 및 검색 필터링 기능 포함)
+            function renderTable(param, isSearch = false) {
+                if (param === 'notice') {
+                    showSection('notice');
+                    // 공지사항 표시 시 사이드바 활성 메뉴 해제
+                    const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
+                    if (currentActive) {
+                        currentActive.classList.remove('active-menu-item');
+                    }
+                    // 상단 드롭다운을 '전체'로 리셋
+                    categorySelect.value = 'all';
+                    if (searchInput) { // 검색 입력 필드가 존재하는 경우에만
+                        searchInput.value = ''; // 검색창도 비워줍니다.
+                    }
+                    return; // 공지사항을 표시했으므로 함수 종료
+                }
+
+                showSection('table'); // 카테고리 또는 검색 결과 표시 시 테이블 섹션 표시
+                musicTableBody.innerHTML = ''; // 기존 테이블 행 지우기
+
+                let filteredData = [];
+                if (isSearch) {
+                    const searchTerm = param.toLowerCase();
+                    filteredData = allMusicData.filter(item =>
+                        item.artist.toLowerCase().includes(searchTerm) ||
+                        item.title.toLowerCase().includes(searchTerm)
+                    );
+                    // 검색 시 사이드바 활성 메뉴 해제 및 카테고리 드롭다운 '전체'로 리셋
+                    const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
+                    if (currentActive) {
+                        currentActive.classList.remove('active-menu-item');
+                    }
+                    categorySelect.value = 'all';
+
+                } else { // 카테고리 필터링
+                    if (param === 'all') {
+                        filteredData = allMusicData;
+                    } else {
+                        filteredData = allMusicData.filter(item => item.genre === param);
+                    }
+                    if (searchInput) { // 검색 입력 필드가 존재하는 경우에만
+                        searchInput.value = ''; // 카테고리 선택 시 검색창을 비워줍니다.
+                    }
+                }
+
+                if (filteredData.length === 0) {
+                    const noDataRow = document.createElement('tr');
+                    noDataRow.innerHTML = `<td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">데이터가 없습니다.</td>`;
+                    musicTableBody.appendChild(noDataRow);
+                } else {
+                    filteredData.forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        // 짝수 행에만 아주 연한 푸른색 배경 추가
+                        if (index % 2 === 1) {
+                            row.classList.add('even-row-extra-light-blue');
+                        }
+                        row.classList.add('hover:bg-gray-50', 'transition', 'duration-150', 'ease-in-out');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-normal text-gray-700">${item.artist}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.title}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.genre}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.note}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 copy-cell" data-title="${item.title}">
+                                <img src="https://cdn.discordapp.com/attachments/947143234885419081/1400192602380304505/Custom-Icon-Design-Mono-General-2-Copy.512.png?ex=688bbe7a&is=688a6cfa&hm=18bfd566ce1cc58b1819898b3c84b724a435536563e5eaa3d751fcd8878350dd&" alt="복사 아이콘" class="w-5 h-5 mx-auto block">
+                            </td>
+                        `;
+                        musicTableBody.appendChild(row);
+                    });
+
+                    // 모든 '복사' 셀에 이벤트 리스너 추가
+                    document.querySelectorAll('.copy-cell').forEach(cell => {
+                        cell.addEventListener('click', function() {
+                            const titleToCopy = this.dataset.title;
+                            const textToCopy = `!신청 ${titleToCopy}`;
+
+                            // 임시 textarea를 생성하여 텍스트를 복사
+                            const tempTextArea = document.createElement('textarea');
+                            tempTextArea.value = textToCopy;
+                            document.body.appendChild(tempTextArea);
+                            tempTextArea.select();
+                            try {
+                                document.execCommand('copy');
+                                showCopyMessage(); // 복사 성공 메시지 표시
+                            } catch (err) {
+                                console.error('클립보드 복사 실패:', err);
+                                // 사용자에게 복사 실패 메시지를 보여줄 수도 있습니다.
+                            }
+                            document.body.removeChild(tempTextArea);
+                        });
+                    });
+                }
+            }
+
+            // 사이드바 메뉴 클릭 이벤트 리스너
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // 기본 링크 동작 방지
+
+                    // 현재 활성화된 메뉴 항목의 active-menu-item 클래스 제거
+                    const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
+                    if (currentActive) {
+                        currentActive.classList.remove('active-menu-item');
+                    }
+
+                    // 클릭된 메뉴 항목의 부모 li에 active-menu-item 클래스 추가
+                    this.closest('li').classList.add('active-menu-item');
+
+                    const category = this.dataset.category;
+                    renderTable(category, false); // 카테고리 필터링임을 명시
+                });
+            });
+
+            // 상단 카테고리 드롭다운 변경 이벤트 리스너
+            categorySelect.addEventListener('change', function() {
+                const category = this.value;
+                renderTable(category, false); // 카테고리 필터링임을 명시
+
+                // 상단 드롭다운 변경 시 사이드바 메뉴 활성화 상태도 업데이트
+                const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
+                if (currentActive) {
+                    currentActive.classList.remove('active-menu-item');
+                }
+                const correspondingSidebarLink = document.querySelector(`#sidebar nav ul li a[data-category="${category}"]`);
+                if (correspondingSidebarLink) {
+                    correspondingSidebarLink.closest('li').classList.add('active-menu-item');
+                }
+            });
+
+            // 사이드바 로고 클릭 이벤트 리스너
+            sidebarLogoLink.addEventListener('click', function(event) {
+                event.preventDefault(); // 기본 링크 동작 방지
+                renderTable('notice'); // 로고 클릭 시 공지사항 표시
+                closeSidebar(); // 모바일에서 사이드바 닫기
+            });
+
+            // 검색 입력 필드 이벤트 리스너
+            if (searchInput) { // 검색 입력 필드가 존재하는 경우에만
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value;
+                    renderTable(searchTerm, true); // 검색 필터링임을 명시
+                });
+            }
+
+            // 버튼 클릭 시 사이드바 토글 (로직 수정됨)
+            mobileMenuButton.addEventListener('click', function() {
+                if (sidebar.classList.contains('open')) {
+                    closeSidebar(); // 사이드바가 열려 있으면 닫기
+                } else {
+                    openSidebar(); // 사이드바가 닫혀 있으면 열기
+                }
+            });
+
+            // 오버레이 클릭 시 사이드바 닫기
+            sidebarOverlay.addEventListener('click', closeSidebar);
+
+            // 데스크톱 화면 크기 조정 시 사이드바 가시성 조절
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) { // md breakpoint
+                    sidebar.classList.remove('open'); // 데스크톱에서는 모바일 열림 상태 해제
+                    sidebarOverlay.style.display = 'none'; // 데스크톱에서는 오버레이 숨김
+                }
+            });
+
+            // 페이지 로드 시 '공지사항' 섹션으로 시작
+            renderTable('notice');
+            // 공지사항으로 시작할 때는 사이드바의 어떤 메뉴도 활성화하지 않습니다.
+        });
+    </script>
 </body>
 </html>
