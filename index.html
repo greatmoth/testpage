@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>멋진 웹 페이지 (연한 푸른빛 모노톤 테마)</title>
+    <title>린시의 노래책</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -96,6 +96,10 @@
             font-weight: bold; /* 텍스트를 두껍게 */
             color: #1e40af; /* Tailwind blue-900 - 선택된 메뉴 텍스트를 진하게 */
         }
+        /* 활성화된 메뉴 항목에 마우스를 올렸을 때 텍스트 색상 유지 */
+        .active-menu-item a:hover {
+            color: #1e40af !important; /* 활성화된 상태의 색상 유지 */
+        }
         /* 선택된 '업보 목록' 메뉴의 텍스트는 빨간색을 유지 */
         .active-menu-item li[data-category="업보 목록"] a {
             color: #ef4444 !important; /* 선택되어도 빨간색 유지 */
@@ -159,7 +163,7 @@
                         <select id="category-select" class="w-full h-full bg-transparent focus:outline-none text-gray-700 appearance-none pr-8">
                             <option value="all">전체</option>
                             <option value="여자 아이돌">여자 아이돌</option>
-                            <option value="남자 아이돌">남자 아이돌</m>
+                            <option value="남자 아이돌">남자 아이돌</option>
                             <option value="인디/힙합">인디/힙합</option>
                             <option value="팝송">팝송</option>
                             <option value="제이팝">제이팝</option>
@@ -172,7 +176,7 @@
                     </div>
                     <div class="h-6 border-l border-gray-200 mx-1"></div>
                     <input type="search" id="search-input" placeholder="검색..." class="flex-1 p-2 pl-4 bg-transparent focus:outline-none w-64">
-                    <button class="text-gray-600 p-2 px-4 h-full flex items-center justify-center hover:text-gray-700 transition duration-200">
+                    <button id="search-button" class="text-gray-600 p-2 px-4 h-full flex items-center justify-center hover:text-gray-700 transition duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
                 </div>
@@ -299,7 +303,8 @@
             const sidebarLogoLink = document.getElementById('sidebar-logo-link'); // 로고 링크 요소 가져오기
             const tableSection = document.getElementById('table-section'); // 테이블 섹션 요소 가져오기
             const noticeSection = document.getElementById('notice-section'); // 공지사항 섹션 요소 가져오기
-            const searchInput = document.querySelector('header input[type="search"]'); // 검색 입력 필드
+            const searchInput = document.getElementById('search-input'); // 검색 입력 필드
+            const searchButton = document.getElementById('search-button'); // 검색 버튼 요소
             const copyMessage = document.getElementById('copy-message'); // 복사 메시지 요소
 
             // Sample Music Data
@@ -369,48 +374,38 @@
             }
 
             // 테이블 데이터 렌더링 함수 (공지사항 및 검색 필터링 기능 포함)
-            function renderTable(param, isSearch = false) {
-                if (param === 'notice') {
+            function renderTable(selectedCategory, searchTerm) {
+                if (selectedCategory === 'notice') { // 'notice'는 특별한 경우로 처리
                     showSection('notice');
-                    // 공지사항 표시 시 사이드바 활성 메뉴 해제
+                    // 공지사항 표시 시 사이드바 활성 메뉴 해제 및 상단 드롭다운 '전체'로 리셋
                     const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
                     if (currentActive) {
                         currentActive.classList.remove('active-menu-item');
                     }
-                    // 상단 드롭다운을 '전체'로 리셋
                     categorySelect.value = 'all';
-                    if (searchInput) { // 검색 입력 필드가 존재하는 경우에만
-                        searchInput.value = ''; // 검색창도 비워줍니다.
+                    if (searchInput) {
+                        searchInput.value = '';
                     }
-                    return; // 공지사항을 표시했으므로 함수 종료
+                    return;
                 }
 
                 showSection('table'); // 카테고리 또는 검색 결과 표시 시 테이블 섹션 표시
                 musicTableBody.innerHTML = ''; // 기존 테이블 행 지우기
 
-                let filteredData = [];
-                if (isSearch) {
-                    const searchTerm = param.toLowerCase();
-                    filteredData = allMusicData.filter(item =>
-                        item.artist.toLowerCase().includes(searchTerm) ||
-                        item.title.toLowerCase().includes(searchTerm)
-                    );
-                    // 검색 시 사이드바 활성 메뉴 해제 및 카테고리 드롭다운 '전체'로 리셋
-                    const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
-                    if (currentActive) {
-                        currentActive.classList.remove('active-menu-item');
-                    }
-                    categorySelect.value = 'all';
+                let filteredData = allMusicData;
 
-                } else { // 카테고리 필터링
-                    if (param === 'all') {
-                        filteredData = allMusicData;
-                    } else {
-                        filteredData = allMusicData.filter(item => item.genre === param);
-                    }
-                    if (searchInput) { // 검색 입력 필드가 존재하는 경우에만
-                        searchInput.value = ''; // 카테고리 선택 시 검색창을 비워줍니다.
-                    }
+                // 1. 카테고리 필터 적용
+                if (selectedCategory && selectedCategory !== 'all') {
+                    filteredData = filteredData.filter(item => item.genre === selectedCategory);
+                }
+
+                // 2. 검색어 필터 적용
+                if (searchTerm) {
+                    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+                    filteredData = filteredData.filter(item =>
+                        item.artist.toLowerCase().includes(lowerCaseSearchTerm) ||
+                        item.title.toLowerCase().includes(lowerCaseSearchTerm)
+                    );
                 }
 
                 if (filteredData.length === 0) {
@@ -476,40 +471,36 @@
                     this.closest('li').classList.add('active-menu-item');
 
                     const category = this.dataset.category;
-                    renderTable(category, false); // 카테고리 필터링임을 명시
+                    // categorySelect.value = category; // 헤더 드롭다운과 동기화 로직 제거
+                    searchInput.value = ''; // 검색 입력 초기화
+                    renderTable(category, ''); // 새 카테고리로 렌더링, 검색어 없음
                 });
             });
 
-            // 상단 카테고리 드롭다운 변경 이벤트 리스너
+            // 상단 카테고리 드롭다운 변경 이벤트 리스너 (즉시 필터링하지 않음)
             categorySelect.addEventListener('change', function() {
-                const category = this.value;
-                renderTable(category, false); // 카테고리 필터링임을 명시
-
-                // 상단 드롭다운 변경 시 사이드바 메뉴 활성화 상태도 업데이트
-                const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
-                if (currentActive) {
-                    currentActive.classList.remove('active-menu-item');
-                }
-                const correspondingSidebarLink = document.querySelector(`#sidebar nav ul li a[data-category="${category}"]`);
-                if (correspondingSidebarLink) {
-                    correspondingSidebarLink.closest('li').classList.add('active-menu-item');
-                }
+                // 사이드바 활성 링크와 동기화 로직 제거
+                // renderTable 호출은 searchButton 클릭 시에만
             });
 
-            // 사이드바 로고 클릭 이벤트 리스너
-            sidebarLogoLink.addEventListener('click', function(event) {
-                event.preventDefault(); // 기본 링크 동작 방지
-                renderTable('notice'); // 로고 클릭 시 공지사항 표시
-                closeSidebar(); // 모바일에서 사이드바 닫기
-            });
-
-            // 검색 입력 필드 이벤트 리스너
-            if (searchInput) { // 검색 입력 필드가 존재하는 경우에만
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = this.value;
-                    renderTable(searchTerm, true); // 검색 필터링임을 명시
+            // 검색 입력 필드에서 엔터 키 입력 시 검색 실행
+            if (searchInput) {
+                searchInput.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        const currentCategory = categorySelect.value; // 현재 선택된 카테고리 가져오기
+                        const currentSearchTerm = searchInput.value; // 현재 검색어 가져오기
+                        renderTable(currentCategory, currentSearchTerm); // 현재 카테고리와 검색어로 렌더링
+                    }
                 });
             }
+
+            // 검색 버튼 클릭 이벤트 리스너
+            searchButton.addEventListener('click', function() {
+                const currentCategory = categorySelect.value; // 현재 선택된 카테고리 가져오기
+                const currentSearchTerm = searchInput.value; // 현재 검색어 가져오기
+                renderTable(currentCategory, currentSearchTerm); // 현재 카테고리와 검색어로 렌더링
+            });
+
 
             // 버튼 클릭 시 사이드바 토글 (로직 수정됨)
             mobileMenuButton.addEventListener('click', function() {
@@ -532,7 +523,7 @@
             });
 
             // 페이지 로드 시 '공지사항' 섹션으로 시작
-            renderTable('notice');
+            renderTable('notice', ''); // 초기 로드 시 공지사항 표시
             // 공지사항으로 시작할 때는 사이드바의 어떤 메뉴도 활성화하지 않습니다.
         });
     </script>
