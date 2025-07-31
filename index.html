@@ -8,6 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        html {
+            overflow-y: scroll; /* 스크롤바가 항상 표시되도록 하여 레이아웃 이동 방지 */
+        }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f9fafb; /* gray-50 - 아주 연한 회색 */
@@ -156,7 +159,7 @@
                         <select id="category-select" class="w-full h-full bg-transparent focus:outline-none text-gray-700 appearance-none pr-8">
                             <option value="all">전체</option>
                             <option value="여자 아이돌">여자 아이돌</option>
-                            <option value="남자 아이돌">남자 아이돌</option>
+                            <option value="남자 아이돌">남자 아이돌</m>
                             <option value="인디/힙합">인디/힙합</option>
                             <option value="팝송">팝송</option>
                             <option value="제이팝">제이팝</option>
