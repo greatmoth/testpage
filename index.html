@@ -194,8 +194,10 @@
             <!-- 사이드바 -->
             <aside id="sidebar" class="sidebar">
                 <div class="logo-container px-6 py-8">
+                    <!-- 로고 링크에 클릭 이벤트 리스너를 추가했습니다. -->
                     <a href="#" id="sidebar-logo-link">
-                        <img src="https://media.discordapp.net/attachments/947143234885419081/1400157310562734142/copy.png?ex=688b9d9c&is=688a4c1c&hm=96561cc9b17c368e8281c7cabd10f861c960d17ede1d5d9c2e57fde7ce55918a&=&format=webp&quality=lossless" alt="린시의 노래책 로고" class="w-full h-auto block">
+                        <!-- 로고 이미지 주소를 요청하신 주소로 변경했습니다. -->
+                        <img src="https://github.com/greatmoth/testpage/blob/main/logo.png?raw=true" alt="린시의 노래책 로고" class="w-full h-auto block" onerror="this.onerror=null;this.src='https://placehold.co/400x100/eff6ff/1e40af?text=린시의+노래책+로고'">
                     </a>
                 </div>
                 <nav class="flex-1 overflow-y-auto">
@@ -438,7 +440,7 @@
                     document.querySelectorAll('.copy-cell').forEach(cell => {
                         cell.addEventListener('click', function() {
                             const titleToCopy = this.dataset.title;
-                            const textToCopy = `신청 ${titleToCopy}`;
+                            const textToCopy = `!신청 ${titleToCopy}`;
 
                             // 임시 textarea를 생성하여 텍스트를 복사
                             const tempTextArea = document.createElement('textarea');
@@ -462,6 +464,7 @@
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', function(event) {
                     event.preventDefault(); // 기본 링크 동작 방지
+                    closeSidebar(); // 모바일에서는 메뉴 선택 시 사이드바 닫기
 
                     // 현재 활성화된 메뉴 항목의 active-menu-item 클래스 제거
                     const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
@@ -477,6 +480,23 @@
                     searchInput.value = ''; // 검색 입력 초기화
                     renderTable(category, ''); // 새 카테고리로 렌더링, 검색어 없음
                 });
+            });
+
+            // 상단 로고 클릭 이벤트 리스너 (공지사항 페이지로 이동)
+            sidebarLogoLink.addEventListener('click', function(event) {
+                event.preventDefault(); // 기본 링크 동작 방지
+                closeSidebar(); // 모바일에서 로고 클릭 시 사이드바 닫기
+
+                // 현재 활성화된 메뉴 항목의 active-menu-item 클래스 제거
+                const currentActive = document.querySelector('#sidebar nav ul li.active-menu-item');
+                if (currentActive) {
+                    currentActive.classList.remove('active-menu-item');
+                }
+
+                // 공지사항 섹션 렌더링 및 검색/카테고리 초기화
+                renderTable('notice', '');
+                categorySelect.value = 'all';
+                searchInput.value = '';
             });
 
             // 상단 카테고리 드롭다운 변경 이벤트 리스너 (즉시 필터링하지 않음)
