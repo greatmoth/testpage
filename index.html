@@ -438,7 +438,7 @@
                     document.querySelectorAll('.copy-cell').forEach(cell => {
                         cell.addEventListener('click', function() {
                             const titleToCopy = this.dataset.title;
-                            const textToCopy = `!신청 ${titleToCopy}`;
+                            const textToCopy = `신청 ${titleToCopy}`;
 
                             // 임시 textarea를 생성하여 텍스트를 복사
                             const tempTextArea = document.createElement('textarea');
