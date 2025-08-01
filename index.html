@@ -209,7 +209,6 @@
             const tableSection = document.getElementById('table-section');
             const noticeSection = document.getElementById('notice-section');
             const searchInput = document.getElementById('search-input');
-            const searchButton = document.getElementById('search-button');
             const copyMessage = document.getElementById('copy-message');
             const loveMenuItem = document.getElementById('love-menu-item');
             const musicTable = document.querySelector('#table-section table');
@@ -221,44 +220,44 @@
                 selectedCategory: 'notice' // 현재 선택된 카테고리
             };
 
-            // 샘플 음악 데이터 (키/BPM 정보 추가)
+            // ⭐ 샘플 음악 데이터에 고정된 색상 클래스 추가
             const allMusicData = [
-                { artist: 'NewJeans', title: 'Ditto', genre: '여자 아이돌', keyBpm: 'B / 135 BPM' },
-                { artist: 'BTS', title: 'Dynamite', genre: '남자 아이돌', keyBpm: 'C / 114 BPM' },
-                { artist: '혁오 (Hyukoh)', title: '위잉위잉', genre: '인디/힙합', keyBpm: 'D#m / 100 BPM' },
-                { artist: 'Adele', title: 'Rolling in the Deep', genre: '팝송', keyBpm: 'C / 105 BPM' },
-                { artist: '요아소비 (YOASOBI)', title: '아이돌 (アイドル)', genre: '제이팝', keyBpm: 'F / 167 BPM' },
-                { artist: 'IVE', title: 'LOVE DIVE', genre: '여자 아이돌', keyBpm: 'Am / 117 BPM' },
-                { artist: 'Stray Kids', title: 'God\'s Menu', genre: '남자 아이돌', keyBpm: 'D#m / 154 BPM' },
-                { artist: '잔나비 (Jannabi)', title: '주저하는 연인들을 위해', genre: '인디/힙합', keyBpm: 'F / 128 BPM' },
-                { artist: 'Dua Lipa', title: 'Levitating', genre: '팝송', keyBpm: 'Am / 103 BPM' },
-                { artist: 'Official髭男dism', title: 'Pretender', genre: '제이팝', keyBpm: 'Bb / 92 BPM' },
-                { artist: 'LE SSERAFIM', title: 'UNFORGIVEN', genre: '여자 아이돌', keyBpm: 'Dm / 105 BPM' },
-                { artist: 'SEVENTEEN', title: 'Super', genre: '남자 아이돌', keyBpm: 'C# / 130 BPM' },
-                { artist: 'AKMU', title: '낙엽이 아름다운 이유', genre: '인디/힙합', keyBpm: 'G / 115 BPM' },
-                { artist: 'The Weeknd', title: 'Blinding Lights', genre: '팝송', keyBpm: 'Fm / 171 BPM' },
-                { artist: 'King Gnu', title: '白日', genre: '제이팝', keyBpm: 'C / 95 BPM' },
-                { artist: 'TWICE', title: 'SET ME FREE', genre: '여자 아이돌', keyBpm: 'G / 105 BPM' },
-                { artist: 'aespa', title: 'Drama', genre: '여자 아이돌', keyBpm: 'G / 125 BPM' },
-                { artist: 'ITZY', title: 'CAKE', genre: '여자 아이돌', keyBpm: 'F# / 138 BPM' },
-                { artist: 'EXO', title: 'Growl', genre: '남자 아이돌', keyBpm: 'B / 165 BPM' },
-                { artist: 'NCT DREAM', title: 'Candy', genre: '남자 아이돌', keyBpm: 'D / 120 BPM' },
-                { artist: 'TREASURE', title: 'BONA BONA', genre: '남자 아이돌', keyBpm: 'Am / 125 BPM' },
-                { artist: '카더가든', title: 'Together', genre: '인디/힙합', keyBpm: 'G / 85 BPM' },
-                { artist: 'pH-1', title: 'Nerdy Love (feat. 백예린)', genre: '인디/힙합', keyBpm: 'Cm / 100 BPM' },
-                { artist: '자이언티', title: '꺼내 먹어요', genre: '인디/힙합', keyBpm: 'G / 100 BPM' },
-                { artist: 'Ed Sheeran', title: 'Shape of You', genre: '팝송', keyBpm: 'C#m / 96 BPM' },
-                { artist: 'Billie Eilish', title: 'bad guy', genre: '팝송', keyBpm: 'Gm / 135 BPM' },
-                { artist: 'Olivia Rodrigo', title: 'vampire', genre: '팝송', keyBpm: 'B / 125 BPM' },
-                { artist: 'YOASOBI', title: '夜に駆ける', genre: '제이팝', keyBpm: 'C#m / 130 BPM' },
-                { artist: 'Fujii Kaze', title: 'Shinunoga E-Wa', genre: '제이팝', keyBpm: 'Am / 140 BPM' },
-                { artist: 'Ado', title: 'Usseewa', genre: '제이팝', keyBpm: 'G#m / 175 BPM' },
-                { artist: '송하예', title: '내 마음이 나쁜가 봐', genre: '애교곡', keyBpm: 'G / 85 BPM' },
-                { artist: '윤하', title: '오르트구름', genre: '애교곡', keyBpm: 'C / 125 BPM' },
-                { artist: '아이유', title: '복숭아', genre: '애교곡', keyBpm: 'D / 140 BPM' },
+                { artist: 'NewJeans', title: 'Ditto', genre: '여자 아이돌', keyBpm: 'B / 135 BPM', colorClass: 'bg-red-100' },
+                { artist: 'BTS', title: 'Dynamite', genre: '남자 아이돌', keyBpm: 'C / 114 BPM', colorClass: 'bg-yellow-100' },
+                { artist: '혁오 (Hyukoh)', title: '위잉위잉', genre: '인디/힙합', keyBpm: 'D#m / 100 BPM', colorClass: 'bg-blue-100' },
+                { artist: 'Adele', title: 'Rolling in the Deep', genre: '팝송', keyBpm: 'C / 105 BPM', colorClass: 'bg-red-100' },
+                { artist: '요아소비 (YOASOBI)', title: '아이돌 (アイドル)', genre: '제이팝', keyBpm: 'F / 167 BPM', colorClass: 'bg-yellow-100' },
+                { artist: 'IVE', title: 'LOVE DIVE', genre: '여자 아이돌', keyBpm: 'Am / 117 BPM', colorClass: 'bg-blue-100' },
+                { artist: 'Stray Kids', title: 'God\'s Menu', genre: '남자 아이돌', keyBpm: 'D#m / 154 BPM', colorClass: 'bg-red-100' },
+                { artist: '잔나비 (Jannabi)', title: '주저하는 연인들을 위해', genre: '인디/힙합', keyBpm: 'F / 128 BPM', colorClass: 'bg-yellow-100' },
+                { artist: 'Dua Lipa', title: 'Levitating', genre: '팝송', keyBpm: 'Am / 103 BPM', colorClass: 'bg-blue-100' },
+                { artist: 'Official髭男dism', title: 'Pretender', genre: '제이팝', keyBpm: 'Bb / 92 BPM', colorClass: 'bg-red-100' },
+                { artist: 'LE SSERAFIM', title: 'UNFORGIVEN', genre: '여자 아이돌', keyBpm: 'Dm / 105 BPM', colorClass: 'bg-yellow-100' },
+                { artist: 'SEVENTEEN', title: 'Super', genre: '남자 아이돌', keyBpm: 'C# / 130 BPM', colorClass: 'bg-blue-100' },
+                { artist: 'AKMU', title: '낙엽이 아름다운 이유', genre: '인디/힙합', keyBpm: 'G / 115 BPM', colorClass: 'bg-red-100' },
+                { artist: 'The Weeknd', title: 'Blinding Lights', genre: '팝송', keyBpm: 'Fm / 171 BPM', colorClass: 'bg-yellow-100' },
+                { artist: 'King Gnu', title: '白日', genre: '제이팝', keyBpm: 'C / 95 BPM', colorClass: 'bg-blue-100' },
+                { artist: 'TWICE', title: 'SET ME FREE', genre: '여자 아이돌', keyBpm: 'G / 105 BPM', colorClass: 'bg-red-100' },
+                { artist: 'aespa', title: 'Drama', genre: '여자 아이돌', keyBpm: 'G / 125 BPM', colorClass: 'bg-yellow-100' },
+                { artist: 'ITZY', title: 'CAKE', genre: '여자 아이돌', keyBpm: 'F# / 138 BPM', colorClass: 'bg-blue-100' },
+                { artist: 'EXO', title: 'Growl', genre: '남자 아이돌', keyBpm: 'B / 165 BPM', colorClass: 'bg-red-100' },
+                { artist: 'NCT DREAM', title: 'Candy', genre: '남자 아이돌', keyBpm: 'D / 120 BPM', colorClass: 'bg-yellow-100' },
+                { artist: 'TREASURE', title: 'BONA BONA', genre: '남자 아이돌', keyBpm: 'Am / 125 BPM', colorClass: 'bg-blue-100' },
+                { artist: '카더가든', title: 'Together', genre: '인디/힙합', keyBpm: 'G / 85 BPM', colorClass: 'bg-red-100' },
+                { artist: 'pH-1', title: 'Nerdy Love (feat. 백예린)', genre: '인디/힙합', keyBpm: 'Cm / 100 BPM', colorClass: 'bg-yellow-100' },
+                { artist: '자이언티', title: '꺼내 먹어요', genre: '인디/힙합', keyBpm: 'G / 100 BPM', colorClass: 'bg-blue-100' },
+                { artist: 'Ed Sheeran', title: 'Shape of You', genre: '팝송', keyBpm: 'C#m / 96 BPM', colorClass: 'bg-red-100' },
+                { artist: 'Billie Eilish', title: 'bad guy', genre: '팝송', keyBpm: 'Gm / 135 BPM', colorClass: 'bg-yellow-100' },
+                { artist: 'Olivia Rodrigo', title: 'vampire', genre: '팝송', keyBpm: 'B / 125 BPM', colorClass: 'bg-blue-100' },
+                { artist: 'YOASOBI', title: '夜に駆ける', genre: '제이팝', keyBpm: 'C#m / 130 BPM', colorClass: 'bg-red-100' },
+                { artist: 'Fujii Kaze', title: 'Shinunoga E-Wa', genre: '제이팝', keyBpm: 'Am / 140 BPM', colorClass: 'bg-yellow-100' },
+                { artist: 'Ado', title: 'Usseewa', genre: '제이팝', keyBpm: 'G#m / 175 BPM', colorClass: 'bg-blue-100' },
+                { artist: '송하예', title: '내 마음이 나쁜가 봐', genre: '애교곡', keyBpm: 'G / 85 BPM', colorClass: 'bg-red-100' },
+                { artist: '윤하', title: '오르트구름', genre: '애교곡', keyBpm: 'C / 125 BPM', colorClass: 'bg-yellow-100' },
+                { artist: '아이유', title: '복숭아', genre: '애교곡', keyBpm: 'D / 140 BPM', colorClass: 'bg-blue-100' },
                 // 업보 목록
-                { artist: '린시', title: '다시는 안 할 업보', genre: '업보 목록', keyBpm: 'Am / 120 BPM' },
-                { artist: '린시', title: '또 다른 업보', genre: '업보 목록', keyBpm: 'Dm / 110 BPM' },
+                { artist: '린시', title: '다시는 안 할 업보', genre: '업보 목록', keyBpm: 'Am / 120 BPM', colorClass: 'bg-red-100' },
+                { artist: '린시', title: '또 다른 업보', genre: '업보 목록', keyBpm: 'Dm / 110 BPM', colorClass: 'bg-yellow-100' },
             ];
 
             // 비고란에 무작위 값 할당
@@ -338,7 +337,7 @@
                     if (state.selectedCategory !== 'all' && state.selectedCategory !== 'notice') {
                         dataToRender = allMusicData.filter(item => item.genre === state.selectedCategory);
                     }
-                } 
+                }
                 // 2. 검색어가 있는 경우: 검색바의 카테고리를 기준으로 필터링하고 '업보 목록' 제외
                 else {
                     const lowerCaseSearchTerm = state.currentSearchTerm.toLowerCase();
@@ -370,7 +369,8 @@
                             row.classList.add('even-row-extra-light-blue');
                         }
                         
-                        const colorClass = ['bg-red-100', 'bg-yellow-100', 'bg-blue-100'][index % 3];
+                        // ⭐ 데이터 객체에 미리 할당된 색상 클래스를 사용
+                        const colorClass = item.colorClass;
 
                         // '업보 목록'일 경우 마지막 셀을 비웁니다.
                         let lastCellContent = '';
@@ -436,22 +436,11 @@
                 updateUIAndFilter();
             });
             
-            // 검색 버튼 클릭 이벤트
-            searchButton.addEventListener('click', () => {
+            // 검색창에 입력이 발생할 때마다 실시간으로 검색을 실행하도록 수정
+            searchInput.addEventListener('input', () => {
                 state.currentSearchTerm = searchInput.value;
-                // 검색 시, `state.selectedCategory`를 검색바의 카테고리로 변경
                 state.selectedCategory = categorySelect.value;
                 updateUIAndFilter();
-            });
-
-            // 엔터 키 입력 이벤트
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    state.currentSearchTerm = searchInput.value;
-                    // 검색 시, `state.selectedCategory`를 검색바의 카테고리로 변경
-                    state.selectedCategory = categorySelect.value;
-                    updateUIAndFilter();
-                }
             });
             
             musicTableBody.addEventListener('click', (e) => {
