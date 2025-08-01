@@ -1,182 +1,79 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
+<!DOCTYPE html><html lang="ko"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>린시의 노래책</title>
-    <!-- 탭 아이콘 추가 -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>" />
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 폰트: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* HTML 전체에 스크롤바가 항상 표시되도록 하여 레이아웃 이동 방지 */
-        html {
-            overflow-y: scroll;
-        }
-        
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb; /* gray-50 - 아주 연한 회색 */
         }
-
-        /* 사이드바와 메인 콘텐츠를 포함하는 래퍼 */
-        .main-layout-wrapper {
-            flex: 1; /* 남은 수직 공간을 모두 차지 */
-            display: flex; /* 사이드바와 메인 콘텐츠를 수평으로 배치 */
-        }
-
-        /* 모바일 사이드바 오버레이 스타일 */
+        /* 항상 스크롤바 표시 */
+        html { overflow-y: scroll; }
+        /* 메인 레이아웃 래퍼 */
+        .main-layout-wrapper { flex: 1; display: flex; }
+        /* 사이드바 오버레이 (모바일) */
         .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 40; /* 사이드바 아래, 메인 콘텐츠 위 */
-            display: none; /* 기본적으로 숨김 */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); z-index: 40; display: none;
         }
-
-        /* 사이드바 자체 스타일 */
+        /* 사이드바 (모바일) */
         .sidebar {
-            background-color: #eff6ff; /* blue-50 - 아주 연한 푸른색 */
-            color: black; /* 텍스트 색상을 어둡게 변경 */
-            width: 16rem; /* w-64 */
-            flex-shrink: 0; /* 사이드바 너비 유지 */
-            box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* 그림자 효과 */
-            z-index: 50; /* 사이드바가 다른 요소 위에 오도록 */
-            transition: transform 0.3s ease-out; /* 부드러운 전환 효과 */
-
-            /* 모바일 특정 위치 지정 - 기본적으로 화면 왼쪽 밖으로 숨김 */
-            position: fixed;
-            height: 100vh; /* 모바일에서 전체 뷰포트 높이 차지 */
-            top: 0;
-            left: 0;
-            transform: translateX(-100%);
-
-            /* 내부 레이아웃을 위한 flex 속성 */
-            display: flex;
-            flex-direction: column;
+            position: fixed; top: 0; left: 0; height: 100vh;
+            transform: translateX(-100%); transition: transform 0.3s ease-out;
+            z-index: 50; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            width: 16rem; flex-shrink: 0;
         }
-
-        .sidebar.open {
-            transform: translateX(0); /* 사이드바 열림 (모바일) */
+        .sidebar.open { transform: translateX(0); }
+        /* 데스크톱 사이드바 */
+        @media (min-width: 768px) {
+            .sidebar { position: relative; height: auto; transform: translateX(0); box-shadow: none; }
         }
-
-        /* 데스크톱 (md) 화면 이상에서 사이드바 스타일 */
-        @media (min-width: 768px) { /* md breakpoint */
-            .sidebar {
-                position: relative; /* 일반적인 문서 흐름으로 되돌림 */
-                height: auto; /* flexbox가 높이 관리하도록 함 (부모 높이만큼 확장) */
-                transform: translateX(0); /* 데스크톱에서는 항상 보이도록 */
-                box-shadow: none; /* 데스크톱에서는 그림자 제거 */
-            }
+        /* 활성화된 메뉴 항목 */
+        .active-menu-item { background-color: #dbeafe; }
+        .active-menu-item a { padding-left: 2.0rem; font-weight: bold; color: #1e40af; }
+        .active-menu-item a:hover { color: #1e40af !important; }
+        /* 복사 메시지 */
+        #copy-message {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7); color: white;
+            padding: 1rem 2rem; border-radius: 0.5rem;
+            z-index: 1000; opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
         }
-
-        /* 짝수 행에 적용될 배경색 */
-        .even-row-extra-light-blue {
-            background-color: #f9f9f9;
-        }
-
-        /* '업보 목록' 메뉴에 대한 커스텀 스타일 */
-        #sidebar nav ul li[data-category="업보 목록"] {
-            margin-top: 60px !important;
-        }
-        #sidebar nav ul li[data-category="업보 목록"] a {
-            color: #ef4444 !important; /* Tailwind red-500 */
-        }
-
-        /* 선택된 사이드바 메뉴 항목 스타일 */
-        .active-menu-item {
-            background-color: #dbeafe; /* Tailwind blue-100 */
-        }
-        /* 선택된 메뉴 항목의 텍스트 스타일 */
-        .active-menu-item a {
-            padding-left: 2.0rem;
-            font-weight: bold;
-            color: #1e40af; /* Tailwind blue-900 */
-        }
-        /* 활성화된 메뉴 항목에 마우스를 올렸을 때 텍스트 색상 유지 */
-        .active-menu-item a:hover {
-            color: #1e40af !important;
-        }
-        /* 선택된 '업보 목록' 메뉴의 텍스트는 빨간색 유지 */
-        .active-menu-item li[data-category="업보 목록"] a {
-            color: #ef4444 !important;
-        }
-
-        /* 테이블 열 너비 고정 (기본: 복사 모드) */
+        #copy-message.show { opacity: 1; }
+        /* 복사 아이콘 */
+        .copy-cell img { cursor: pointer; transition: all 0.1s ease-in-out; }
+        .copy-cell img:hover { transform: scale(1.1); }
+        .copy-cell img:active { transform: scale(0.9) translateY(1px); }
+        /* 테이블 열 너비 (기본 복사 모드) */
         #table-section table th:nth-child(1) { width: 3%; }
         #table-section table th:nth-child(2) { width: 22%; }
         #table-section table th:nth-child(3) { width: 35%; }
         #table-section table th:nth-child(4) { width: 17%; }
         #table-section table th:nth-child(5) { width: 13%; }
         #table-section table th:nth-child(6) { width: 10%; }
-        
-        /* 키/BPM 모드일 때 테이블 열 너비 (CSS 우선순위 문제 해결) */
-        #table-section .key-bpm-mode th:nth-child(4) { width: 15%; }
-        #table-section .key-bpm-mode th:nth-child(5) { width: 10%; }
-        #table-section .key-bpm-mode th:nth-child(6) { width: 15%; }
-
-        /* 복사 메시지 스타일 */
-        #copy-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            pointer-events: none; /* 클릭 이벤트 방지 */
-        }
-        #copy-message.show {
-            opacity: 1;
-        }
-
-        /* 복사 셀 클릭 피드백 스타일 */
-        .copy-cell {
-            text-align: center;
-        }
-        .copy-cell img {
-            cursor: pointer;
-            transition: all 0.1s ease-in-out;
-        }
-        .copy-cell img:hover {
-            transform: scale(1.1);
-        }
-        .copy-cell img:active {
-            transform: scale(0.9) translateY(1px);
-        }
-
-        /* 숨겨진 메뉴 항목 스타일 */
-        .hidden-menu-item {
-            display: none;
-        }
-        
-        /* 린시 사랑 메뉴 항목이 활성화되었을 때 스타일 */
-        #love-menu-item.active {
-            font-weight: bold;
-            color: #ec4899; /* pink-600 */
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <!-- 전체 레이아웃 래퍼: 최대 너비 1100px, 가운데 정렬 -->
+        /* 테이블 열 너비 (키/BPM 모드) */
+        #table-section table.key-bpm-mode th:nth-child(4) { width: 15%; }
+        #table-section table.key-bpm-mode th:nth-child(5) { width: 10%; }
+        #table-section table.key-bpm-mode th:nth-child(6) { width: 15%; }
+        /* '업보 목록' 메뉴 스타일 */
+        [data-category="업보 목록"] a { color: #ef4444; }
+        /* '린시 사랑' 메뉴 스타일 */
+        #love-menu-item { display: none; }
+        #love-menu-item.active { display: block; font-weight: bold; color: #ec4899; }
+    </style></head><body class="bg-gray-50">
     <div class="max-w-[1100px] mx-auto flex flex-col min-h-screen bg-white shadow-lg">
-        <!-- Header Section -->
-        <header class="bg-white shadow-sm py-4 border-b border-gray-200 w-full">
-            <nav class="flex justify-between items-center w-full px-4">
-                <a href="#" class="text-2xl font-bold text-gray-800"></a>
-                <!-- 검색 바 및 카테고리 선택 (데스크톱) -->
-                <div class="hidden md:flex items-center border border-gray-200 rounded-full overflow-hidden focus-within:ring-2 focus-within:ring-blue-200 transition duration-200">
+        <header class="bg-white shadow-sm py-4 border-b border-gray-200">
+            <nav class="flex justify-between items-center px-4">
+                <a href="#" class="text-2xl font-bold text-gray-800 hidden md:block"></a>
+                <div class="hidden md:flex items-center rounded-full border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-blue-200 transition duration-200">
                     <div class="relative flex-1 py-2 pl-4">
                         <select id="category-select" class="w-full h-full bg-transparent focus:outline-none text-gray-700 appearance-none pr-8">
+                            <option value="notice">공지사항</option>
                             <option value="all">전체</option>
                             <option value="여자 아이돌">여자 아이돌</option>
                             <option value="남자 아이돌">남자 아이돌</option>
@@ -186,7 +83,6 @@
                             <option value="애교곡">애교곡</option>
                             <option value="업보 목록">업보 목록</option>
                         </select>
-                        <!-- 세모 화살표 아이콘 -->
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 6.757 7.586 5.343 9z"/></svg>
                         </div>
@@ -197,67 +93,40 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
                 </div>
-                <!-- 모바일 사이드바 토글 버튼 -->
                 <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-gray-700 focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </nav>
         </header>
 
-        <!-- 메인 레이아웃 래퍼 (사이드바 + 메인 콘텐츠) -->
-        <div class="main-layout-wrapper flex-1 flex w-full">
-            <!-- 사이드바 -->
-            <aside id="sidebar" class="sidebar">
-                <div class="logo-container px-6 py-8">
-                    <!-- 로고 클릭 시 공지사항 페이지로 이동 -->
+        <div class="main-layout-wrapper">
+            <aside id="sidebar" class="bg-blue-50 text-black flex flex-col overflow-y-auto">
+                <div class="px-6 py-8">
                     <a href="#" id="sidebar-logo-link">
                         <img src="https://github.com/greatmoth/testpage/blob/main/logo.png?raw=true" alt="린시의 노래책 로고" class="w-full h-auto block" onerror="this.onerror=null;this.src='https://placehold.co/400x100/eff6ff/1e40af?text=린시의+노래책+로고'">
                     </a>
                 </div>
-                <nav class="flex-1 overflow-y-auto">
-                    <ul class="space-y-0">
-                        <!-- 사이드바 메뉴 항목 -->
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="all">전체</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="여자 아이돌">여자 아이돌</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="남자 아이돌">남자 아이돌</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="인디/힙합">인디/힙합</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="팝송">팝송</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="제이팝">제이팝</a>
-                        </li>
-                        <li class="border-b border-blue-100 last:border-b-0">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="애교곡">애교곡</a>
-                        </li>
-                        <li data-category="업보 목록">
-                            <a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="업보 목록">업보 목록</a>
-                        </li>
-                        <!-- '린시 사랑' 메뉴 항목. 처음에는 숨겨져 있음. -->
-                        <li id="love-menu-item" class="border-b border-blue-100 last:border-b-0 hidden-menu-item">
-                            <a href="#" class="block text-pink-600 hover:text-pink-900 hover:bg-blue-100 px-6 py-3 transition duration-200">린시 사랑</a>
-                        </li>
+                <nav class="flex-1">
+                    <ul id="sidebar-menu" class="space-y-0">
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="notice">공지사항</a></li>
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="all">전체</a></li>
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="여자 아이돌">여자 아이돌</a></li>
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="남자 아이돌">남자 아이돌</a></li>
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="인디/힙합">인디/힙합</a></li>
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="팝송">팝송</a></li>
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="제이팝">제이팝</a></li>
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="애교곡">애교곡</a></li>
+                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="업보 목록">업보 목록</a></li>
+                        <li id="love-menu-item" class="border-b border-blue-100 last:border-b-0"><a href="#" class="block hover:bg-blue-100 px-6 py-3 transition duration-200">린시 사랑</a></li>
                     </ul>
                 </nav>
             </aside>
 
-            <!-- 모바일 사이드바 오버레이 -->
             <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
-            <!-- 메인 콘텐츠 영역 -->
             <main class="main-content-area flex-1 flex flex-col">
-                <!-- 복사 성공 메시지 -->
                 <div id="copy-message" class="copy-message">복사되었습니다!</div>
 
-                <!-- Table Section (초기에는 숨김) -->
                 <section id="table-section" class="flex-1 flex flex-col bg-white mx-4 mt-4 mb-8 hidden">
                     <div class="flex-1 bg-white overflow-x-auto">
                         <table class="min-w-full divide-y-0 divide-gray-200 table-fixed w-full">
@@ -271,14 +140,11 @@
                                     <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"></th>
                                 </tr>
                             </thead>
-                            <tbody id="music-table-body" class="bg-white divide-y-0 divide-gray-200">
-                                <!-- JavaScript로 데이터 삽입 -->
-                            </tbody>
+                            <tbody id="music-table-body" class="bg-white divide-y-0 divide-gray-200"></tbody>
                         </table>
                     </div>
                 </section>
 
-                <!-- Notice Section (초기에는 표시) -->
                 <section id="notice-section" class="flex-1 flex flex-col bg-white">
                     <div class="w-full px-8 py-8 text-center">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">공지사항</h2>
@@ -286,10 +152,7 @@
                             1. 신청곡은 노래책에 있는 노래만!<br>
                             2. 목 상태에 따라 순서를 미루거나 거절할 수 있습니다
                         </p>
-
-                        <!-- 가격표 컨테이너 -->
                         <div class="flex flex-col md:flex-row gap-8 mt-8 justify-center">
-                            <!-- 신청곡 가격표 박스 -->
                             <div class="bg-blue-50 p-6 rounded-lg shadow-md w-4/5 md:w-2/5 flex flex-col">
                                 <h3 class="text-2xl font-semibold text-blue-800 mb-2">신청곡 가격표</h3>
                                 <div class="flex flex-col flex-1 justify-center">
@@ -299,7 +162,6 @@
                                     </p>
                                 </div>
                             </div>
-                            <!-- 업보 가격표 박스 -->
                             <div class="bg-blue-50 p-6 rounded-lg shadow-md w-4/5 md:w-2/5 flex flex-col">
                                 <h3 class="text-2xl font-semibold text-blue-800 mb-2">업보 가격표</h3>
                                 <div class="flex flex-col flex-1 justify-center">
@@ -322,7 +184,7 @@
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
-            const sidebarLinks = document.querySelectorAll('#sidebar nav ul li a');
+            const sidebarMenu = document.getElementById('sidebar-menu');
             const musicTableBody = document.getElementById('music-table-body');
             const categorySelect = document.getElementById('category-select');
             const sidebarLogoLink = document.getElementById('sidebar-logo-link');
@@ -335,9 +197,11 @@
             const musicTable = document.querySelector('#table-section table');
 
             // 전역 상태 변수
-            let isKeyBpmMode = false;
-            let currentCategory = 'all';
-            let currentSearchTerm = '';
+            let state = {
+                isKeyBpmMode: false,
+                currentCategory: 'notice',
+                currentSearchTerm: ''
+            };
 
             // 샘플 음악 데이터 (키/BPM 정보 추가)
             const allMusicData = [
@@ -383,88 +247,70 @@
                 item.note = notes[randomIndex];
             });
 
-            // 사이드바 열기 함수
-            function openSidebar() {
-                sidebar.classList.add('open');
-                sidebarOverlay.style.display = 'block';
+            // 사이드바 토글 함수
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
             }
 
-            // 사이드바 닫기 함수
-            function closeSidebar() {
-                sidebar.classList.remove('open');
-                sidebarOverlay.style.display = 'none';
+            // 복사 메시지 표시 함수 (비동기 처리)
+            async function copyToClipboard(text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    copyMessage.classList.add('show');
+                    setTimeout(() => copyMessage.classList.remove('show'), 2000);
+                } catch (err) {
+                    console.error('클립보드 복사 실패:', err);
+                }
             }
 
-            // 복사 메시지 표시 함수
-            function showCopyMessage() {
-                copyMessage.classList.add('show');
-                setTimeout(() => {
-                    copyMessage.classList.remove('show');
-                }, 2000); // 2초 후 메시지 숨김
-            }
-
-            /**
-             * 전역 상태를 기반으로 UI를 업데이트하는 중앙 함수
-             */
+            // UI 업데이트 함수
             function updateUI() {
-                // 사이드바 메뉴 활성화 상태 동기화
-                sidebarLinks.forEach(link => {
-                    const listItem = link.closest('li');
-                    if (link.dataset.category === currentCategory) {
+                // 사이드바 및 헤더 카테고리 활성화 상태 동기화
+                document.querySelectorAll('[data-category]').forEach(el => {
+                    const listItem = el.closest('li');
+                    if (el.dataset.category === state.currentCategory) {
                         listItem.classList.add('active-menu-item');
                     } else {
                         listItem.classList.remove('active-menu-item');
                     }
                 });
+                categorySelect.value = state.currentCategory;
+                
+                // '린시 사랑' 버튼 활성화 상태 동기화
+                loveMenuItem.classList.toggle('active', state.isKeyBpmMode);
 
-                // 상단 카테고리 드롭다운 동기화
-                categorySelect.value = currentCategory;
+                // 섹션 가시성 제어
+                const isNotice = state.currentCategory === 'notice';
+                tableSection.classList.toggle('hidden', isNotice);
+                noticeSection.classList.toggle('hidden', !isNotice);
 
-                // 린시 사랑 버튼 활성화 상태 동기화
-                if (isKeyBpmMode) {
-                    loveMenuItem.classList.add('active');
-                } else {
-                    loveMenuItem.classList.remove('active');
-                }
-
-                // 테이블 또는 공지사항 섹션 가시성 제어
-                if (currentCategory === 'notice') {
-                    tableSection.classList.add('hidden');
-                    noticeSection.classList.remove('hidden');
-                } else {
-                    noticeSection.classList.add('hidden');
-                    tableSection.classList.remove('hidden');
+                if (!isNotice) {
                     renderTable();
                 }
             }
 
-            // 테이블 데이터 렌더링 및 필터링 함수
+            // 테이블 데이터 렌더링 함수
             function renderTable() {
                 musicTableBody.innerHTML = '';
-                
-                // isKeyBpmMode 상태에 따라 테이블 클래스 변경
-                if (isKeyBpmMode) {
-                    musicTable.classList.add('key-bpm-mode');
-                } else {
-                    musicTable.classList.remove('key-bpm-mode');
-                }
+                musicTable.classList.toggle('key-bpm-mode', state.isKeyBpmMode);
 
-                // 카테고리 필터링
                 let filteredData = allMusicData;
-                if (currentCategory && currentCategory !== 'all') {
-                    filteredData = filteredData.filter(item => item.genre === currentCategory);
+                
+                // 카테고리 필터링
+                if (state.currentCategory !== 'all') {
+                    filteredData = filteredData.filter(item => item.genre === state.currentCategory);
                 }
 
                 // 검색어 필터링
-                if (currentSearchTerm) {
-                    const lowerCaseSearchTerm = currentSearchTerm.toLowerCase();
+                if (state.currentSearchTerm) {
+                    const lowerCaseSearchTerm = state.currentSearchTerm.toLowerCase();
                     filteredData = filteredData.filter(item =>
                         item.artist.toLowerCase().includes(lowerCaseSearchTerm) ||
                         item.title.toLowerCase().includes(lowerCaseSearchTerm)
                     );
                 }
-
-                // 테이블 행 생성 및 삽입
+                
                 if (filteredData.length === 0) {
                     const noDataRow = document.createElement('tr');
                     noDataRow.innerHTML = `<td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">데이터가 없습니다.</td>`;
@@ -472,162 +318,112 @@
                 } else {
                     filteredData.forEach((item, index) => {
                         const row = document.createElement('tr');
+                        row.classList.add('hover:bg-gray-50', 'transition', 'duration-150', 'ease-in-out');
                         if (index % 2 === 1) {
                             row.classList.add('even-row-extra-light-blue');
                         }
-                        row.classList.add('hover:bg-gray-50', 'transition', 'duration-150', 'ease-in-out');
-
-                        let colorClass;
-                        switch (index % 3) {
-                            case 0: colorClass = 'bg-red-100'; break;
-                            case 1: colorClass = 'bg-yellow-100'; break;
-                            case 2: colorClass = 'bg-blue-100'; break;
-                        }
                         
-                        // isKeyBpmMode 상태에 따라 마지막 열의 내용을 다르게 렌더링
-                        const lastCellContent = isKeyBpmMode ? `<span class="font-semibold text-gray-700">${item.keyBpm.replace(' BPM', '')}</span>` : `
-                            <img src="https://cdn.discordapp.com/attachments/947143234885419081/1400192602380304505/Custom-Icon-Design-Mono-General-2-Copy.512.png?ex=688bbe7a&is=688a6cfa&hm=18bfd566ce1cc58b1819898b3c84b724a435536563e5eaa3d751fcd8878350dd&" alt="복사 아이콘" class="w-5 h-5 mx-auto block">
-                        `;
-
+                        const colorClass = ['bg-red-100', 'bg-yellow-100', 'bg-blue-100'][index % 3];
+                        const lastCellContent = state.isKeyBpmMode
+                            ? `<span class="font-semibold text-gray-700">${item.keyBpm.replace(' BPM', '')}</span>`
+                            : `<img src="https://cdn.discordapp.com/attachments/947143234885419081/1400192602380304505/Custom-Icon-Design-Mono-General-2-Copy.512.png?ex=688bbe7a&is=688a6cfa&hm=18bfd566ce1cc58b1819898b3c84b724a435536563e5eaa3d751fcd8878350dd&" alt="복사 아이콘" class="w-5 h-5 mx-auto block">`;
+                        
                         row.innerHTML = `
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center ${colorClass}"></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-normal text-gray-700">${item.artist}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.title}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.genre}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.note}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 copy-cell" data-title="${item.title}">
-                                ${lastCellContent}
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 copy-cell" data-title="${item.title}">${lastCellContent}</td>
                         `;
                         musicTableBody.appendChild(row);
                     });
-
-                    // '복사' 셀에 이벤트 리스너 추가
-                    // 키/BPM 모드가 아닐 때만 복사 기능 활성화
-                    if (!isKeyBpmMode) {
-                        document.querySelectorAll('.copy-cell').forEach(cell => {
-                            cell.addEventListener('click', function() {
-                                const titleToCopy = this.dataset.title;
-                                const textToCopy = `!신청 ${titleToCopy}`;
-
-                                // 클립보드에 텍스트 복사
-                                const tempTextArea = document.createElement('textarea');
-                                tempTextArea.value = textToCopy;
-                                document.body.appendChild(tempTextArea);
-                                tempTextArea.select();
-                                try {
-                                    document.execCommand('copy');
-                                    showCopyMessage();
-                                } catch (err) {
-                                    console.error('클립보드 복사 실패:', err);
-                                }
-                                document.body.removeChild(tempTextArea);
-                            });
-                        });
-                    }
                 }
             }
 
-            // 이벤트 리스너 설정
-            // 사이드바 메뉴 클릭 시
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    closeSidebar();
-                    
-                    currentCategory = this.dataset.category;
-                    currentSearchTerm = '';
-                    searchInput.value = '';
-                    updateUI();
-                });
-            });
-
-            // 상단 카테고리 드롭다운 변경 시
-            categorySelect.addEventListener('change', function() {
-                currentCategory = this.value;
-                updateUI();
-            });
-
-            // 상단 로고 클릭 시
-            sidebarLogoLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                closeSidebar();
-                
-                currentCategory = 'notice';
-                currentSearchTerm = '';
+            // 이벤트 리스너 통합 관리
+            function handleCategoryChange(category) {
+                state.currentCategory = category;
+                state.currentSearchTerm = '';
                 searchInput.value = '';
                 updateUI();
+                if (window.innerWidth < 768) {
+                    toggleSidebar();
+                }
+            }
+            
+            // 이벤트 리스너 설정
+            mobileMenuButton.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            sidebarMenu.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A') {
+                    e.preventDefault();
+                    const category = e.target.dataset.category;
+                    if (category) {
+                        handleCategoryChange(category);
+                    }
+                }
             });
 
-            // 검색 입력 필드에서 엔터 키 입력 시
-            if (searchInput) {
-                searchInput.addEventListener('keydown', function(event) {
-                    if (event.key === 'Enter') {
-                        currentSearchTerm = searchInput.value;
-                        updateUI();
-                    }
-                });
-            }
+            categorySelect.addEventListener('change', (e) => {
+                handleCategoryChange(e.target.value);
+            });
 
-            // 검색 버튼 클릭 시
-            searchButton.addEventListener('click', function() {
-                currentSearchTerm = searchInput.value;
+            sidebarLogoLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleCategoryChange('notice');
+            });
+            
+            searchButton.addEventListener('click', () => {
+                state.currentSearchTerm = searchInput.value;
                 updateUI();
             });
 
-            // 모바일 사이드바 토글 버튼 클릭 시
-            mobileMenuButton.addEventListener('click', function() {
-                if (sidebar.classList.contains('open')) {
-                    closeSidebar();
-                } else {
-                    openSidebar();
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    state.currentSearchTerm = searchInput.value;
+                    updateUI();
+                }
+            });
+            
+            musicTableBody.addEventListener('click', (e) => {
+                const copyCell = e.target.closest('.copy-cell');
+                if (copyCell && !state.isKeyBpmMode) {
+                    const title = copyCell.dataset.title;
+                    if (title) {
+                        copyToClipboard(`!신청 ${title}`);
+                    }
                 }
             });
 
-            // 오버레이 클릭 시 사이드바 닫기
-            sidebarOverlay.addEventListener('click', closeSidebar);
-
-            // 윈도우 크기 변경 시 사이드바 가시성 조절
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 768) {
-                    sidebar.classList.remove('open');
-                    sidebarOverlay.style.display = 'none';
-                }
-            });
-
-            // "린시 사랑" 메뉴를 위한 이벤트 리스너 및 로직
+            // 코나미 코드 로직
             const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowDown', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp'];
             let konamiIndex = 0;
-
             window.addEventListener('keydown', (e) => {
                 if (e.key === konamiCode[konamiIndex]) {
                     konamiIndex++;
                 } else {
                     konamiIndex = 0;
                 }
-
                 if (konamiIndex === konamiCode.length) {
-                    loveMenuItem.classList.remove('hidden-menu-item');
+                    loveMenuItem.style.display = 'block';
                     konamiIndex = 0;
                 }
             });
-            
-            // "린시 사랑" 메뉴 클릭 이벤트 핸들러
-            loveMenuItem.addEventListener('click', function(event) {
-                event.preventDefault();
-                closeSidebar();
-                
-                // 테이블 섹션이 보일 때만 토글 기능 실행
-                if (currentCategory !== 'notice') {
-                    isKeyBpmMode = !isKeyBpmMode;
+
+            loveMenuItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (state.currentCategory !== 'notice') {
+                    state.isKeyBpmMode = !state.isKeyBpmMode;
                     updateUI();
+                }
+                if (window.innerWidth < 768) {
+                    toggleSidebar();
                 }
             });
 
-            // 페이지 로드 시 '공지사항' 섹션으로 시작
-            currentCategory = 'notice';
+            // 초기 페이지 로드
             updateUI();
         });
-    </script>
-</body>
-</html>
+    </script></body></html>
