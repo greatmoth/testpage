@@ -23,12 +23,12 @@
             position: fixed; top: 0; left: 0; height: 100vh;
             transform: translateX(-100%); transition: transform 0.3s ease-out;
             z-index: 50; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-            width: 16rem; flex-shrink: 0;
+            width: 16rem; flex-shrink: 0; /* 사이드바 너비를 16rem (256px)으로 변경 */
         }
         .sidebar.open { transform: translateX(0); }
         /* 데스크톱 사이드바 */
         @media (min-width: 768px) {
-            .sidebar { position: relative; height: auto; transform: translateX(0); box-shadow: none; }
+            .sidebar { position: relative; height: auto; transform: translateX(0); box-shadow: none; width: 16rem; }
         }
         /* 활성화된 메뉴 항목 */
         .active-menu-item { background-color: #dbeafe; }
@@ -93,8 +93,9 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
                 </div>
-                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-gray-700 focus:outline-none">
+                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-gray-700 focus:outline-none flex items-center space-x-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    <span>메뉴</span>
                 </button>
             </nav>
         </header>
