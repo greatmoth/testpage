@@ -23,16 +23,16 @@
             position: fixed; top: 0; left: 0; height: 100vh;
             transform: translateX(-100%); transition: transform 0.3s ease-out;
             z-index: 50; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-            width: 16rem; flex-shrink: 0; /* 사이드바 너비를 16rem (256px)으로 변경 */
+            width: 16rem; flex-shrink: 0;
         }
         .sidebar.open { transform: translateX(0); }
         /* 데스크톱 사이드바 */
         @media (min-width: 768px) {
             .sidebar { position: relative; height: auto; transform: translateX(0); box-shadow: none; width: 16rem; }
         }
-        /* 활성화된 메뉴 항목 */
+        /* 활성화된 메뉴 항목 - 기본 파란색 */
         .active-menu-item { background-color: #dbeafe; }
-        .active-menu-item a { padding-left: 2.0rem; font-weight: bold; color: #1e40af; }
+        .active-menu-item a { font-weight: bold; color: #1e40af; }
         .active-menu-item a:hover { color: #1e40af !important; }
         /* 복사 메시지 */
         #copy-message {
@@ -60,11 +60,29 @@
         #table-section table.key-bpm-mode th:nth-child(4) { width: 15%; }
         #table-section table.key-bpm-mode th:nth-child(5) { width: 10%; }
         #table-section table.key-bpm-mode th:nth-child(6) { width: 15%; }
-        /* '업보 목록' 메뉴 스타일 */
-        [data-category="업보 목록"] a { color: #ef4444; }
-        /* '린시 사랑' 메뉴 스타일 */
+        /* '업보 목록' 메뉴 스타일 - 기본 상태 (볼드 아님) */
+        #karma-menu-item a {
+            color: #ef4444; /* 빨간색 */
+            font-weight: normal; /* 볼드 아님 */
+        }
+        /* '업보 목록' 메뉴 스타일 - 활성화 상태 (클릭 시) */
+        #karma-menu-item.active-menu-item a {
+            color: #b91c1c; /* 활성화 시 진한 빨간색 텍스트로 오버라이드 */
+            font-weight: bold; /* 활성화 시 볼드 처리 */
+        }
+        /* '업보 목록' 메뉴 - 활성화 상태에서 마우스 호버 시 텍스트 색상 고정 */
+        #karma-menu-item.active-menu-item a:hover {
+            color: #b91c1c !important;
+        }
+        /* '린시 사랑' 메뉴 스타일 - 핑크색으로 변경 */
         #love-menu-item { display: none; }
-        #love-menu-item.active { display: block; font-weight: bold; color: #ec4899; }
+        #love-menu-item a { color: #db2777; }
+        #love-menu-item.active { display: block; font-weight: bold; color: #db2777; }
+
+        /* 짝수 행 배경색을 더 연한 회색으로 변경 */
+        .even-row-extra-light-blue {
+            background-color: #f9fafb;
+        }
     </style></head><body class="bg-gray-50">
     <div class="max-w-[1100px] mx-auto flex flex-col min-h-screen bg-white shadow-lg">
         <header class="bg-white shadow-sm py-4 border-b border-gray-200">
@@ -73,7 +91,6 @@
                 <div class="hidden md:flex items-center rounded-full border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-blue-200 transition duration-200">
                     <div class="relative flex-1 py-2 pl-4">
                         <select id="category-select" class="w-full h-full bg-transparent focus:outline-none text-gray-700 appearance-none pr-8">
-                            <option value="notice">공지사항</option>
                             <option value="all">전체</option>
                             <option value="여자 아이돌">여자 아이돌</option>
                             <option value="남자 아이돌">남자 아이돌</option>
@@ -81,7 +98,6 @@
                             <option value="팝송">팝송</option>
                             <option value="제이팝">제이팝</option>
                             <option value="애교곡">애교곡</option>
-                            <option value="업보 목록">업보 목록</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 6.757 7.586 5.343 9z"/></svg>
@@ -90,7 +106,7 @@
                     <div class="h-6 border-l border-gray-200 mx-1"></div>
                     <input type="search" id="search-input" placeholder="검색..." class="flex-1 p-2 pl-4 bg-transparent focus:outline-none w-64">
                     <button id="search-button" class="text-gray-600 p-2 px-4 h-full flex items-center justify-center hover:text-gray-700 transition duration-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/24/24" ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
                 </div>
                 <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-gray-700 focus:outline-none flex items-center space-x-2">
@@ -101,24 +117,25 @@
         </header>
 
         <div class="main-layout-wrapper">
-            <aside id="sidebar" class="bg-blue-50 text-black flex flex-col overflow-y-auto">
-                <div class="px-6 py-8">
+            <aside id="sidebar" class="bg-blue-50 text-black flex flex-col overflow-y-auto w-64">
+                <div class="py-4 px-4">
                     <a href="#" id="sidebar-logo-link">
-                        <img src="https://github.com/greatmoth/testpage/blob/main/logo.png?raw=true" alt="린시의 노래책 로고" class="w-full h-auto block" onerror="this.onerror=null;this.src='https://placehold.co/400x100/eff6ff/1e40af?text=린시의+노래책+로고'">
+                        <img src="https://github.com/greatmoth/testpage/blob/main/logo.png?raw=true" alt="린시의 노래책 로고" class="max-w-full h-auto block" onerror="this.onerror=null;this.src='https://placehold.co/256x100/eff6ff/1e40af?text=린시의+노래책+로고'">
                     </a>
                 </div>
                 <nav class="flex-1">
-                    <ul id="sidebar-menu" class="space-y-0">
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="notice">공지사항</a></li>
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="all">전체</a></li>
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="여자 아이돌">여자 아이돌</a></li>
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="남자 아이돌">남자 아이돌</a></li>
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="인디/힙합">인디/힙합</a></li>
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="팝송">팝송</a></li>
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="제이팝">제이팝</a></li>
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="애교곡">애교곡</a></li>
-                        <li class="border-b border-blue-100"><a href="#" class="block text-gray-600 hover:text-blue-950 hover:bg-blue-100 px-6 py-3 transition duration-200" data-category="업보 목록">업보 목록</a></li>
-                        <li id="love-menu-item" class="border-b border-blue-100 last:border-b-0"><a href="#" class="block hover:bg-blue-100 px-6 py-3 transition duration-200">린시 사랑</a></li>
+                    <ul class="space-y-0">
+                        <li class="border-b border-blue-100 hover:bg-blue-100 transition duration-200"><a href="#" class="block px-6 py-3 text-gray-600 hover:text-blue-950" data-category="all">전체</a></li>
+                        <li class="border-b border-blue-100 hover:bg-blue-100 transition duration-200"><a href="#" class="block px-6 py-3 text-gray-600 hover:text-blue-950" data-category="여자 아이돌">여자 아이돌</a></li>
+                        <li class="border-b border-blue-100 hover:bg-blue-100 transition duration-200"><a href="#" class="block px-6 py-3 text-gray-600 hover:text-blue-950" data-category="남자 아이돌">남자 아이돌</a></li>
+                        <li class="border-b border-blue-100 hover:bg-blue-100 transition duration-200"><a href="#" class="block px-6 py-3 text-gray-600 hover:text-blue-950" data-category="인디/힙합">인디/힙합</a></li>
+                        <li class="border-b border-blue-100 hover:bg-blue-100 transition duration-200"><a href="#" class="block px-6 py-3 text-gray-600 hover:text-blue-950" data-category="팝송">팝송</a></li>
+                        <li class="border-b border-blue-100 hover:bg-blue-100 transition duration-200"><a href="#" class="block px-6 py-3 text-gray-600 hover:text-blue-950" data-category="제이팝">제이팝</a></li>
+                        <li class="hover:bg-blue-100 transition duration-200"><a href="#" class="block px-6 py-3 text-gray-600 hover:text-blue-950" data-category="애교곡">애교곡</a></li>
+                    </ul>
+                    <ul class="space-y-0 mt-16">
+                        <li id="karma-menu-item"><a href="#" class="block px-6 py-3 text-gray-600 hover:bg-blue-100 hover:text-blue-950 transition duration-200" data-category="업보 목록">업보 목록</a></li>
+                        <li id="love-menu-item" class="border-b border-blue-100 last:border-b-0 hover:bg-blue-100 transition duration-200"><a href="#" class="block px-6 py-3 hover:text-blue-950">린시 사랑</a></li>
                     </ul>
                 </nav>
             </aside>
@@ -185,7 +202,7 @@
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
-            const sidebarMenu = document.getElementById('sidebar-menu');
+            const sidebarNav = document.querySelector('#sidebar nav');
             const musicTableBody = document.getElementById('music-table-body');
             const categorySelect = document.getElementById('category-select');
             const sidebarLogoLink = document.getElementById('sidebar-logo-link');
@@ -197,11 +214,11 @@
             const loveMenuItem = document.getElementById('love-menu-item');
             const musicTable = document.querySelector('#table-section table');
 
-            // 전역 상태 변수
+            // 전역 상태 변수: UI의 현재 상태를 관리합니다.
             let state = {
                 isKeyBpmMode: false,
-                currentCategory: 'notice',
-                currentSearchTerm: ''
+                currentSearchTerm: '',
+                selectedCategory: 'notice' // 현재 선택된 카테고리
             };
 
             // 샘플 음악 데이터 (키/BPM 정보 추가)
@@ -239,6 +256,9 @@
                 { artist: '송하예', title: '내 마음이 나쁜가 봐', genre: '애교곡', keyBpm: 'G / 85 BPM' },
                 { artist: '윤하', title: '오르트구름', genre: '애교곡', keyBpm: 'C / 125 BPM' },
                 { artist: '아이유', title: '복숭아', genre: '애교곡', keyBpm: 'D / 140 BPM' },
+                // 업보 목록
+                { artist: '린시', title: '다시는 안 할 업보', genre: '업보 목록', keyBpm: 'Am / 120 BPM' },
+                { artist: '린시', title: '또 다른 업보', genre: '업보 목록', keyBpm: 'Dm / 110 BPM' },
             ];
 
             // 비고란에 무작위 값 할당
@@ -254,38 +274,53 @@
                 sidebarOverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
             }
 
-            // 복사 메시지 표시 함수 (비동기 처리)
-            async function copyToClipboard(text) {
+            // 복사 메시지 표시 함수 (동기 처리)
+            function copyToClipboard(text) {
+                const tempInput = document.createElement('textarea');
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
                 try {
-                    await navigator.clipboard.writeText(text);
+                    document.execCommand('copy');
                     copyMessage.classList.add('show');
                     setTimeout(() => copyMessage.classList.remove('show'), 2000);
                 } catch (err) {
                     console.error('클립보드 복사 실패:', err);
+                } finally {
+                    document.body.removeChild(tempInput);
                 }
             }
 
-            // UI 업데이트 함수
-            function updateUI() {
-                // 사이드바 및 헤더 카테고리 활성화 상태 동기화
-                document.querySelectorAll('[data-category]').forEach(el => {
-                    const listItem = el.closest('li');
-                    if (el.dataset.category === state.currentCategory) {
+            // UI 업데이트 및 데이터 필터링 함수
+            function updateUIAndFilter() {
+                // 현재 선택된 카테고리를 기준으로 사이드바 UI 상태 업데이트
+                document.querySelectorAll('nav li').forEach(listItem => {
+                    const link = listItem.querySelector('a');
+                    const category = link ? link.dataset.category : null;
+
+                    if (category === state.selectedCategory) {
                         listItem.classList.add('active-menu-item');
                     } else {
                         listItem.classList.remove('active-menu-item');
                     }
                 });
-                categorySelect.value = state.currentCategory;
-                
+
+                // 검색바의 드롭다운 값은 `state.selectedCategory`와 다르게 유지될 수 있음
+                if (state.selectedCategory === 'notice' || state.selectedCategory === '업보 목록') {
+                    categorySelect.value = 'all';
+                } else {
+                    categorySelect.value = state.selectedCategory;
+                }
+
                 // '린시 사랑' 버튼 활성화 상태 동기화
                 loveMenuItem.classList.toggle('active', state.isKeyBpmMode);
 
                 // 섹션 가시성 제어
-                const isNotice = state.currentCategory === 'notice';
+                const isNotice = state.selectedCategory === 'notice';
                 tableSection.classList.toggle('hidden', isNotice);
                 noticeSection.classList.toggle('hidden', !isNotice);
 
+                // 공지사항 섹션이 아니라면 테이블 렌더링
                 if (!isNotice) {
                     renderTable();
                 }
@@ -296,28 +331,39 @@
                 musicTableBody.innerHTML = '';
                 musicTable.classList.toggle('key-bpm-mode', state.isKeyBpmMode);
 
-                let filteredData = allMusicData;
-                
-                // 카테고리 필터링
-                if (state.currentCategory !== 'all') {
-                    filteredData = filteredData.filter(item => item.genre === state.currentCategory);
-                }
+                let dataToRender = allMusicData;
 
-                // 검색어 필터링
-                if (state.currentSearchTerm) {
+                // 1. 검색어가 없는 경우: 사이드바 카테고리에 따라 필터링
+                if (!state.currentSearchTerm) {
+                    if (state.selectedCategory !== 'all' && state.selectedCategory !== 'notice') {
+                        dataToRender = allMusicData.filter(item => item.genre === state.selectedCategory);
+                    }
+                } 
+                // 2. 검색어가 있는 경우: 검색바의 카테고리를 기준으로 필터링하고 '업보 목록' 제외
+                else {
                     const lowerCaseSearchTerm = state.currentSearchTerm.toLowerCase();
-                    filteredData = filteredData.filter(item =>
+                    
+                    // '업보 목록'은 검색 대상에서 무조건 제외
+                    dataToRender = dataToRender.filter(item => item.genre !== '업보 목록');
+
+                    // 검색바의 카테고리가 'all'이 아니면 해당 카테고리로 필터링
+                    if (state.selectedCategory !== 'all') {
+                        dataToRender = dataToRender.filter(item => item.genre === state.selectedCategory);
+                    }
+                    
+                    // 마지막으로 검색어에 따라 필터링
+                    dataToRender = dataToRender.filter(item =>
                         item.artist.toLowerCase().includes(lowerCaseSearchTerm) ||
                         item.title.toLowerCase().includes(lowerCaseSearchTerm)
                     );
                 }
                 
-                if (filteredData.length === 0) {
+                if (dataToRender.length === 0) {
                     const noDataRow = document.createElement('tr');
                     noDataRow.innerHTML = `<td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">데이터가 없습니다.</td>`;
                     musicTableBody.appendChild(noDataRow);
                 } else {
-                    filteredData.forEach((item, index) => {
+                    dataToRender.forEach((item, index) => {
                         const row = document.createElement('tr');
                         row.classList.add('hover:bg-gray-50', 'transition', 'duration-150', 'ease-in-out');
                         if (index % 2 === 1) {
@@ -325,66 +371,86 @@
                         }
                         
                         const colorClass = ['bg-red-100', 'bg-yellow-100', 'bg-blue-100'][index % 3];
-                        const lastCellContent = state.isKeyBpmMode
-                            ? `<span class="font-semibold text-gray-700">${item.keyBpm.replace(' BPM', '')}</span>`
-                            : `<img src="https://cdn.discordapp.com/attachments/947143234885419081/1400192602380304505/Custom-Icon-Design-Mono-General-2-Copy.512.png?ex=688bbe7a&is=688a6cfa&hm=18bfd566ce1cc58b1819898b3c84b724a435536563e5eaa3d751fcd8878350dd&" alt="복사 아이콘" class="w-5 h-5 mx-auto block">`;
+
+                        // '업보 목록'일 경우 마지막 셀을 비웁니다.
+                        let lastCellContent = '';
+                        let lastCellClasses = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
                         
+                        if (item.genre !== '업보 목록') {
+                            if (state.isKeyBpmMode) {
+                                lastCellContent = `<span class="font-semibold text-gray-700">${item.keyBpm.replace(' BPM', '')}</span>`;
+                            } else {
+                                lastCellContent = `<img src="https://cdn.discordapp.com/attachments/947143234885419081/1400192602380304505/Custom-Icon-Design-Mono-General-2-Copy.512.png?ex=688bbe7a&is=688a6cfa&hm=18bfd566ce1cc58b1819898b3c84b724a435536563e5eaa3d751fcd8878350dd&" alt="복사 아이콘" class="w-5 h-5 mx-auto block">`;
+                                lastCellClasses += ' copy-cell';
+                            }
+                        }
+
                         row.innerHTML = `
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center ${colorClass}"></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-normal text-gray-700">${item.artist}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.title}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.genre}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.note}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 copy-cell" data-title="${item.title}">${lastCellContent}</td>
+                            <td class="${lastCellClasses}" data-title="${item.title}">${lastCellContent}</td>
                         `;
                         musicTableBody.appendChild(row);
                     });
                 }
             }
 
-            // 이벤트 리스너 통합 관리
-            function handleCategoryChange(category) {
-                state.currentCategory = category;
-                state.currentSearchTerm = '';
-                searchInput.value = '';
-                updateUI();
-                if (window.innerWidth < 768) {
-                    toggleSidebar();
-                }
-            }
-            
             // 이벤트 리스너 설정
             mobileMenuButton.addEventListener('click', toggleSidebar);
             sidebarOverlay.addEventListener('click', toggleSidebar);
 
-            sidebarMenu.addEventListener('click', (e) => {
-                if (e.target.tagName === 'A') {
+            // 사이드바 메뉴 클릭 이벤트
+            sidebarNav.addEventListener('click', (e) => {
+                const targetLink = e.target.closest('a');
+                if (targetLink) {
                     e.preventDefault();
-                    const category = e.target.dataset.category;
+                    const category = targetLink.dataset.category;
                     if (category) {
-                        handleCategoryChange(category);
+                        state.selectedCategory = category;
+                        state.currentSearchTerm = '';
+                        searchInput.value = '';
+                        updateUIAndFilter();
+                    }
+                    if (window.innerWidth < 768) {
+                        toggleSidebar();
                     }
                 }
             });
 
-            categorySelect.addEventListener('change', (e) => {
-                handleCategoryChange(e.target.value);
+            // 검색창의 카테고리 셀렉트 박스 변경 시
+            categorySelect.addEventListener('change', () => {
+                state.selectedCategory = categorySelect.value;
+                state.currentSearchTerm = '';
+                searchInput.value = '';
+                updateUIAndFilter();
             });
 
             sidebarLogoLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                handleCategoryChange('notice');
+                state.selectedCategory = 'notice';
+                state.currentSearchTerm = '';
+                searchInput.value = '';
+                updateUIAndFilter();
             });
             
+            // 검색 버튼 클릭 이벤트
             searchButton.addEventListener('click', () => {
                 state.currentSearchTerm = searchInput.value;
-                updateUI();
+                // 검색 시, `state.selectedCategory`를 검색바의 카테고리로 변경
+                state.selectedCategory = categorySelect.value;
+                updateUIAndFilter();
             });
 
+            // 엔터 키 입력 이벤트
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     state.currentSearchTerm = searchInput.value;
-                    updateUI();
+                    // 검색 시, `state.selectedCategory`를 검색바의 카테고리로 변경
+                    state.selectedCategory = categorySelect.value;
+                    updateUIAndFilter();
                 }
             });
             
@@ -393,31 +459,35 @@
                 if (copyCell && !state.isKeyBpmMode) {
                     const title = copyCell.dataset.title;
                     if (title) {
-                        copyToClipboard(`!신청 ${title}`);
+                        // 복사 텍스트를 '신청'으로 수정
+                        copyToClipboard(`신청 ${title}`);
                     }
                 }
             });
 
-            // 코나미 코드 로직
-            const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowDown', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp'];
+            // 코나미 코드 로직 수정: 사용자 요청에 맞춰 키 순서 변경
+            const konamiCode = ['ArrowUp', 'ArrowDown', 'ArrowUp', 'ArrowDown', 'ArrowLeft'];
             let konamiIndex = 0;
             window.addEventListener('keydown', (e) => {
-                if (e.key === konamiCode[konamiIndex]) {
+                const key = e.key;
+
+                if (konamiIndex < konamiCode.length && key === konamiCode[konamiIndex]) {
                     konamiIndex++;
                 } else {
                     konamiIndex = 0;
                 }
+
                 if (konamiIndex === konamiCode.length) {
                     loveMenuItem.style.display = 'block';
-                    konamiIndex = 0;
+                    konamiIndex = 0; // 코드가 성공적으로 입력되면 초기화
                 }
             });
 
             loveMenuItem.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (state.currentCategory !== 'notice') {
+                if (state.selectedCategory !== 'notice') {
                     state.isKeyBpmMode = !state.isKeyBpmMode;
-                    updateUI();
+                    updateUIAndFilter();
                 }
                 if (window.innerWidth < 768) {
                     toggleSidebar();
@@ -425,6 +495,6 @@
             });
 
             // 초기 페이지 로드
-            updateUI();
+            updateUIAndFilter();
         });
     </script></body></html>
